@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Mars Retrograde — LessWrong Interactive Widget</title>
+<style>
+:root{--bg:#080d19;--panel:#101a2b;--panel2:#101827;--edge:#263347;--muted:#93a1b5;--text:#e9edf5;--gold:#f5cc87;--aqua:#8adee4;--mars:#fc9b83;--signal:#ff9484;--soft:#60718e}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse 900px 660px at 88% -7%,#1d2e43 0%,transparent 73%),radial-gradient(ellipse 700px 550px at -14% 51%,#121e36 0%,transparent 78%),var(--bg);color:var(--text);letter-spacing:.003em}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle at 12% 15%,#b7c4dd55 1px,transparent 1.5px),radial-gradient(circle at 81% 32%,#a0b3d744 1px,transparent 1.3px),radial-gradient(circle at 40% 70%,#9ca9c744 1px,transparent 1.3px);background-size:263px 271px,377px 319px,401px 349px;opacity:.33}
+.wrap{max-width:1320px;padding:39px 40px 54px;margin:auto;position:relative}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:42px}
+.brand{display:flex;gap:11px;align-items:center;font-size:11px;letter-spacing:.25em;font-weight:750;color:#bdcadd}
+.brand-mark{width:27px;height:27px;border:1px solid #c7b58f82;border-radius:50%;position:relative;display:inline-grid;place-items:center;color:var(--gold);font-size:15px}
+.brand-mark:before{content:"";width:35px;height:11px;border:1px solid #e5c48a8a;position:absolute;transform:rotate(-34deg);border-radius:50%}
+.topright{color:#9aaabd;font-size:11px;letter-spacing:.17em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.topright:before{content:"";background:#d3c7a6;width:5px;height:5px;border-radius:50%;box-shadow:0 0 12px #d3c7a6}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 310px;align-items:end;gap:26px;margin-bottom:30px}
+.eyebrow{font-size:11px;letter-spacing:.23em;font-weight:740;color:var(--gold);text-transform:uppercase;margin-bottom:11px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(39px,5vw,70px);line-height:1.04;font-weight:400;letter-spacing:-.044em;margin:0 0 15px}
+h1 em{color:var(--gold);font-weight:400}
+.lead{font-size:14px;color:#aab8ca;line-height:1.7;max-width:660px;margin:0}
+.heroaside{border-left:1px solid #48566b;padding:4px 0 5px 21px;max-width:300px}
+.heroaside .big{font-family:Georgia,serif;font-size:29px;color:var(--gold);margin-bottom:7px}
+.heroaside p{font-size:12px;line-height:1.7;color:#98a8bc;margin:0}
+.model-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.tab{border:1px solid #27364b;background:#111b2b95;border-radius:10px;padding:17px 17px 16px;text-align:left;color:var(--text);cursor:pointer;position:relative;transition:background .18s,border .18s,transform .18s;min-height:91px}
+.tab:hover{border-color:#687991;transform:translateY(-1px)}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.tab.active{border-color:#d4ae717f;background:linear-gradient(120deg,#283246,#19283b)}
+.tab.active:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--gold);border-radius:10px 0 0 10px}
+.tab .tabtop{color:#8c9fb3;font-size:10px;letter-spacing:.17em;margin-bottom:8px;font-weight:700}
+.tab.active .tabtop{color:var(--gold)}
+.tab .tabtitle{font-family:Georgia,serif;font-size:21px;letter-spacing:-.01em;line-height:1.05}
+.tab .tabsub{font-size:11px;color:#91a3b7;margin-top:8px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1.59fr) minmax(320px,1fr);gap:12px}
+.panel{border:1px solid var(--edge);background:linear-gradient(135deg,#111b2bf2,#0d1726f5);border-radius:13px;overflow:hidden;box-shadow:0 11px 35px #02081229}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:20px 23px 0;gap:12px}
+.kicker{color:#abb9cc;font-size:10px;letter-spacing:.2em;font-weight:750;text-transform:uppercase}
+.minitag{font-size:10px;border:1px solid #314258;border-radius:40px;padding:7px 9px;letter-spacing:.08em;color:#9cacc2;white-space:nowrap}
+.stage{position:relative;min-height:440px;display:grid;place-items:center;overflow:hidden}
+#universe{width:100%;height:440px;display:block;overflow:visible}
+.stage:after{content:"";position:absolute;inset:auto 30px 16px;max-width:750px;height:1px;background:linear-gradient(90deg,transparent,#52617441,transparent);pointer-events:none}
+.stage-inscription{position:absolute;bottom:20px;right:25px;font-size:10px;letter-spacing:.14em;color:#667991;pointer-events:none}
+.stage-foot{padding:0 24px 19px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.legend{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px;color:#91a0b5;font-size:11px}
+.key{height:7px;width:7px;display:inline-block;border-radius:100%}
+.key.earth{background:var(--aqua);box-shadow:0 0 10px #8adee477}.key.sun{background:var(--gold);box-shadow:0 0 10px #f5cc8777}.key.mars{background:var(--mars);box-shadow:0 0 10px #fc9b8377}
+.stage-options{display:flex;gap:12px}
+.opt{color:#8fa0b7;font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;user-select:none}
+.opt input{accent-color:var(--gold);width:13px;height:13px;margin:0}
+.info{display:flex;flex-direction:column;min-height:525px;padding-bottom:17px}
+.info .panel-head{padding-bottom:10px}
+.info-main{padding:16px 26px 3px;flex:1}
+.serial{color:var(--gold);letter-spacing:.2em;font-size:11px;font-weight:700;margin-bottom:10px}
+h2{font-family:Georgia,serif;font-size:clamp(26px,2.6vw,37px);line-height:1.1;letter-spacing:-.025em;font-weight:400;margin:0 0 14px}
+#explanation{color:#b3c0d0;font-size:14px;line-height:1.78;margin:0;max-width:390px;min-height:98px}
+.eq{font-family:Georgia,serif;color:var(--gold);margin:13px 0 18px;font-size:16px;letter-spacing:.025em}
+.info-rule{height:1px;background:#2a384b;margin:7px 0 18px}
+.skyrow{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:4px;min-height:154px}
+#skyDial{width:130px;height:130px}
+.small-label{font-size:10px;letter-spacing:.17em;font-weight:760;color:#94a6ba;margin-bottom:7px}
+.large-degree{font-family:Georgia,serif;font-size:38px;letter-spacing:-.03em;color:#eee6d7;font-variant-numeric:tabular-nums}
+.motion{font-size:11px;font-weight:750;letter-spacing:.11em;text-transform:uppercase;margin:5px 0 0}
+.motion.retro{color:var(--signal)}.motion.direct{color:var(--aqua)}
+.velocity{color:#8094aa;font-size:11px;margin-top:6px;font-variant-numeric:tabular-nums}
+.info-bottom{margin:0 23px;padding:12px 14px;border:1px solid #31445a;background:#132235a0;border-radius:8px;display:flex;align-items:flex-start;gap:10px}
+.info-bottom .symbol{font-size:18px;color:var(--gold);line-height:1.1}
+.info-bottom p{font-size:11px;line-height:1.65;color:#b6c2d1;margin:0}
+.transport{border:1px solid var(--edge);border-radius:12px;background:#111b2bea;padding:16px 20px;display:flex;gap:17px;align-items:center;margin:12px 0}
+.play{min-width:94px;height:41px;border:1px solid #dabb86;background:#f0cb91;color:#192135;border-radius:7px;cursor:pointer;font-weight:770;display:flex;justify-content:center;align-items:center;gap:8px;font-size:12px}
+.play:hover{background:#ffddaa}
+.reset{background:#1b293b;border:1px solid #34445a;color:#b3c4d5;border-radius:7px;cursor:pointer;font-size:17px;width:39px;height:41px}
+.reset:hover{border-color:#a5b0bc}
+.scrub-group{flex:1;min-width:130px}
+.scrub-text{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+.scrub-title{font-size:10px;letter-spacing:.14em;color:#8ca0b7;text-transform:uppercase;font-weight:760}
+.scrub-value{color:#e9d8ba;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;font-variant-numeric:tabular-nums}
+#timeline{width:100%;display:block;cursor:pointer;accent-color:var(--gold);height:5px}
+.speed{display:flex;align-items:center;gap:5px}
+.speed span{font-size:10px;letter-spacing:.13em;color:#879ab0;font-weight:720;margin-right:7px}
+.speed button{background:transparent;border:1px solid #364458;color:#9eafc3;border-radius:5px;cursor:pointer;padding:8px 9px;font-size:11px;white-space:nowrap}
+.speed button.selected{color:#f6d7a7;border-color:#a18a6b;background:#343341}
+.chart-panel{margin-top:12px;padding-bottom:16px}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;padding:19px 24px 0;gap:20px;flex-wrap:wrap}
+.chart-title{font-family:Georgia,serif;font-size:23px;letter-spacing:-.01em;margin-top:7px}
+.chart-legend{display:flex;gap:20px;align-items:center;font-size:11px;color:#a2b3c8;padding-top:17px}
+.line{display:inline-block;width:17px;height:3px;vertical-align:3px;margin-right:6px;border-radius:3px;background:var(--aqua)}
+.line.back{background:var(--signal)}
+#skyChart{width:100%;height:auto;display:block;min-height:218px;max-height:320px}
+.chart-note{color:#95a8bd;font-size:12px;line-height:1.65;margin:0 26px 4px;padding-top:2px}
+.chart-note b{color:#d9e1ed;font-weight:650}
+.bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
+.bottom-card{padding:19px 20px 19px;border:1px solid #263448;border-radius:11px;background:#0e1928c7;min-height:133px}
+.bottom-card .head{font-family:Georgia,serif;font-size:19px;margin-bottom:8px;color:#e7ebf2}
+.bottom-card p{color:#9cacc0;line-height:1.65;font-size:11.5px;margin:0}
+.bottom-card .flag{color:var(--gold);font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.footer{color:#74859a;font-size:11px;line-height:1.7;margin-top:22px;max-width:1040px}
+.footer strong{color:#9baabd;font-weight:680}
+.svg-label{font-family:ui-sans-serif,system-ui,sans-serif;fill:#bac9d8;font-weight:600;font-size:12px;letter-spacing:.02em;paint-order:stroke;stroke:#101a2b;stroke-width:4px;stroke-linejoin:round}
+.svg-small{font-family:ui-sans-serif,system-ui,sans-serif;fill:#788a9f;font-size:10px;letter-spacing:.11em}
+.orbit{fill:none;stroke-width:1.35}
+@media(max-width:1000px){.wrap{padding:30px 22px 42px}.main-grid{grid-template-columns:minmax(0,1fr) minmax(290px,.74fr)}.stage{min-height:393px}#universe{height:393px}.info{min-height:468px}.skyrow{grid-template-columns:115px 1fr}#skyDial{width:115px;height:115px}.info-main{padding:12px 18px 0}.hero{grid-template-columns:minmax(0,1fr) 230px}}
+@media(max-width:750px){.wrap{padding:22px 14px 35px}.topbar{margin-bottom:30px}.topright{display:none}.hero{display:block}.heroaside{margin:22px 0 0;padding-left:13px}.heroaside .big{font-size:22px}.model-tabs{gap:6px}.tab{padding:13px 10px;min-height:89px}.tab .tabtitle{font-size:16px}.tab .tabsub{font-size:10px;line-height:1.2}.main-grid{grid-template-columns:1fr}.stage{min-height:340px}#universe{height:370px}.info{min-height:auto}.info-main{padding:13px 24px 10px}.info .panel-head{padding-bottom:0}.info-bottom{margin-top:8px}.skyrow{grid-template-columns:130px 1fr}#skyDial{height:130px;width:130px}.transport{flex-wrap:wrap;gap:10px}.scrub-group{order:3;flex-basis:100%;padding:3px 0}.speed{margin-left:auto}.bottom{grid-template-columns:1fr}.bottom-card{min-height:auto}.chart-head{padding:17px 17px 0}.chart-legend{padding-top:0}.chart-note{margin:0 17px}.hero{margin-bottom:22px}}
+@media(max-width:420px){.tab .tabtitle{font-size:15px}.tab .tabsub{font-size:9px}.kicker{font-size:9px}.panel-head{padding-left:16px;padding-right:16px}.stage-foot{padding-left:17px;padding-right:17px}.stage-options{gap:9px}.legend{gap:8px}.legend span,.opt{font-size:10px}.stage-inscription{right:16px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+<style>
+.wrap{max-width:940px;padding:16px 15px 20px}
+.topbar,.heroaside,.bottom,.footer{display:none}
+.hero{display:block;margin-bottom:13px}
+.eyebrow{font-size:9px;margin-bottom:5px}
+h1{font-size:clamp(26px,4.6vw,38px);margin-bottom:6px}
+.lead{font-size:11.5px;max-width:none;line-height:1.5}
+.model-tabs{gap:6px;margin-bottom:8px}
+.tab{min-height:63px;padding:10px 13px}
+.tab .tabtop{font-size:9px;margin-bottom:6px}
+.tab .tabtitle{font-size:18px}
+.tab .tabsub{display:none}
+.main-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:8px}
+.panel-head{padding:13px 13px 0}
+.kicker{font-size:9px}
+.minitag{font-size:8px;padding:5px 7px}
+.stage{min-height:0}
+#universe{height:328px}
+.stage-foot{padding:0 13px 12px}
+.stage-inscription{bottom:16px;right:14px;font-size:8px}
+.info{min-height:394px}
+.info .panel-head{padding-bottom:3px}
+.info-main{padding:8px 14px 0}
+.serial{font-size:9px;margin-bottom:8px}
+h2{font-size:clamp(23px,2.6vw,29px);margin-bottom:10px}
+#explanation{font-size:11.5px;line-height:1.55;min-height:92px}
+.eq{font-size:12.5px;margin:11px 0 9px}
+.info-rule{margin:6px 0 8px}
+.skyrow{grid-template-columns:98px 1fr;min-height:100px}
+#skyDial{width:98px;height:98px}
+.large-degree{font-size:30px}
+.motion{font-size:9px;letter-spacing:.05em}
+.velocity{font-size:10px}
+.small-label{font-size:9px}
+.info-bottom{margin:7px 12px 0;padding:8px 10px}
+.info-bottom p{font-size:10px;line-height:1.45}
+.transport{margin:8px 0;padding:11px 12px;gap:10px}
+.play{min-width:70px;height:36px}
+.reset{width:35px;height:36px}
+.speed span{display:none}
+.speed button{padding:6px}
+.chart-panel{margin-top:8px;padding-bottom:12px}
+.chart-head{padding:13px 16px 0;gap:8px}
+.chart-title{font-size:19px;margin-top:3px}
+.chart-legend{padding-top:0;font-size:10px;gap:8px}
+#skyChart{min-height:0;max-height:none}
+.chart-note{font-size:10.5px;margin:0 16px}
+@media(max-width:610px){.wrap{padding:10px 9px}.main-grid{grid-template-columns:1fr}.info{min-height:auto}.stage{min-height:0}#universe{height:350px}.hero{margin-bottom:11px}.tab{min-height:62px;padding:11px 8px}.tab .tabtitle{font-size:15px}.tab .tabtop{font-size:8px}.info-main{padding:10px 17px}.info-bottom{margin-bottom:10px}.chart-legend{font-size:9px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">✦</span> THE CELESTIAL ATLAS</div><div class="topright">AN INTERACTIVE EXPERIMENT IN PERSPECTIVE</div></header>
+ <section class="hero"><div><div class="eyebrow">Astronomy / The problem of retrograde motion</div><h1>When Mars <em>walks backward.</em></h1><p class="lead">For weeks, a planet seems to reverse its course against the fixed stars. Three rival pictures of the cosmos explain the same strange dance. Change the model; watch what stays the same.</p></div><aside class="heroaside"><div class="big">One sky. Three stories.</div><p>The question is not whether a model can draw the loop. It is <em>what must move</em> to make the loop appear.</p></aside></section>
+ <nav class="model-tabs" aria-label="Choose a model of the solar system">
+  <button type="button" class="tab" data-model="geo" aria-pressed="false"><div class="tabtop">01 / PTOLEMAIC-STYLE</div><div class="tabtitle">Geocentric</div><div class="tabsub">The planet rides an epicycle</div></button>
+  <button type="button" class="tab" data-model="helio" aria-pressed="false"><div class="tabtop">02 / COPERNICAN</div><div class="tabtitle">Heliocentric</div><div class="tabsub">Earth overtakes Mars</div></button>
+  <button type="button" class="tab" data-model="tycho" aria-pressed="false"><div class="tabtop">03 / TYCHONIC</div><div class="tabtitle">Geo-heliocentric</div><div class="tabsub">The Sun carries Mars around Earth</div></button>
+ </nav>
+ <section class="main-grid">
+  <div class="panel"><div class="panel-head"><div class="kicker">01 — The geometry of the cosmos</div><div class="minitag" id="referenceNote">EARTH HELD STILL</div></div><div class="stage"><svg id="universe" viewBox="0 0 720 485" role="img" aria-label="Animated orbital diagram of Mars, Earth, and the Sun"></svg><div class="stage-inscription">ORBITAL PLANE · SCHEMATIC</div></div><div class="stage-foot"><div class="legend"><span><i class="key sun"></i>Sun</span><span><i class="key earth"></i>Earth</span><span><i class="key mars"></i>Mars</span></div><div class="stage-options"><label class="opt"><input id="construction" type="checkbox" checked>Guides</label><label class="opt"><input id="trails" type="checkbox" checked>Trails</label></div></div></div>
+  <aside class="panel info"><div class="panel-head"><div class="kicker">02 — Why Mars turns around</div><div class="minitag" id="mechanismTag">EPICYCLE</div></div><div class="info-main"><div class="serial" id="serial">MODEL 01 / 03</div><h2 id="modelHeadline">The epicycle does the work.</h2><p id="explanation"></p><div class="eq" id="equation"></div><div class="info-rule"></div><div class="skyrow"><svg id="skyDial" viewBox="0 0 150 150" role="img" aria-label="Mars direction measured against fixed stars"></svg><div><div class="small-label">MARS IN EARTH'S SKY</div><div class="large-degree" id="longitude">—</div><div class="motion" id="motion">—</div><div class="velocity" id="velocity">—</div></div></div></div><div class="info-bottom"><div class="symbol">✧</div><p id="insight">Different cosmologies, identical measured directions from Earth.</p></div></aside>
+ </section>
+ <section class="transport" aria-label="Animation controls"><button class="play" id="play" type="button" aria-label="Play animation"><span id="playIcon">▶</span><span id="playLabel">Play</span></button><button class="reset" id="reset" type="button" aria-label="Return to start" title="Return to start">↺</button><div class="scrub-group"><div class="scrub-text"><span class="scrub-title">Time through the Mars opposition</span><output class="scrub-value" id="dayLabel" for="timeline">Day 403</output></div><input id="timeline" type="range" min="260" max="550" step="0.25" value="403" aria-label="Simulation day"></div><div class="speed"><span>SPEED</span><button type="button" data-speed="0.5">½×</button><button type="button" data-speed="1" class="selected">1×</button><button type="button" data-speed="2">2×</button></div></section>
+ <section class="panel chart-panel"><div class="chart-head"><div><div class="kicker">03 — The observable evidence</div><div class="chart-title">What an observer on Earth actually sees</div></div><div class="chart-legend"><span><i class="line"></i>eastward (direct)</span><span><i class="line back"></i>westward (retrograde)</span></div></div><svg id="skyChart" viewBox="0 0 1160 295" role="img" aria-label="Graph of Mars's apparent celestial longitude versus time, showing the same reversal for all three models"></svg><p class="chart-note"><b>The curve never changes when you switch models.</b> Retrograde motion alone cannot distinguish these three geometries. The red section is where Mars appears to slip backward relative to the fixed stars.</p></section>
+ <div class="bottom"><div class="bottom-card"><div class="flag">01 / Geocentric</div><div class="head">A loop added to a circle</div><p>A deferent and an epicycle reconstruct the reversal with Earth fixed. This simplified construction is not the full historical Ptolemaic model.</p></div><div class="bottom-card"><div class="flag">02 / Heliocentric</div><div class="head">A change of vantage point</div><p>Earth travels faster than Mars around the Sun; the changing viewing direction naturally reverses near opposition.</p></div><div class="bottom-card"><div class="flag">03 / Tychonic</div><div class="head">One sky, two frames</div><p>Earth stays still while the Sun carries Mars around it. In this circular construction, the apparent positions are identical.</p></div></div>
+ <footer class="footer"><strong>About this model.</strong> A deliberately simplified, two-dimensional, circular-orbit demonstration with orbital periods of 365.25 and 686.98 days and a Mars/Earth orbital-radius ratio of 1.52. It shows the geometry of retrograde motion, not an ephemeris or a faithful reconstruction of Ptolemy's equant and eccentric circles. Real orbits are elliptical. Other evidence and physical dynamics distinguish modern heliocentrism from Earth-fixed cosmologies.</footer>
+</main>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const TAU = 2*Math.PI;
+const minDay=260,maxDay=550;
+const WE=TAU/365.25, WM=TAU/686.98, phase=3.25, marsRadius=1.52;
+const palette={gold:'#f5cc87',aqua:'#8adee4',mars:'#fc9b83',line:'#536b86',bg:'#101a2b'};
+const make=(x,y)=>({x,y});
+const plus=(a,b)=>make(a.x+b.x,a.y+b.y);
+const minus=(a,b)=>make(a.x-b.x,a.y-b.y);
+const scale=(p,k)=>make(p.x*k,p.y*k);
+const theta=(v)=>Math.atan2(v.y,v.x);
+const rads=(r,t)=>make(r*Math.cos(t),r*Math.sin(t));
+const solar=t=>({earth:rads(1,WE*t),mars:rads(marsRadius,phase+WM*t)});
+const coordinates=t=>{const a=solar(t);const observed=minus(a.mars,a.earth);return {heliocentric:a,geo:{earth:make(0,0),sun:scale(a.earth,-1),mars:observed,deferent:a.mars},tycho:{earth:make(0,0),sun:scale(a.earth,-1),mars:observed},longitude:theta(observed)};};
+const getLongitude=t=>coordinates(t).longitude*180/Math.PI;
+const directionalDelta=(a,b)=>((a-b+540)%360)-180;
+const apparentRate=t=>directionalDelta(getLongitude(t+.05),getLongitude(t-.05))/.1;
+const formatAngle=t=>((getLongitude(t)%360)+360)%360;
+let model='helio',time=403,speed=1,playing=false,showGuides=true,showTrails=true,lastFrame=null;
+const descriptions={
+geo:{serial:'MODEL 01 / 03',tag:'DEFERENT + EPICYCLE',reference:'EARTH HELD STILL',headline:'The epicycle does the work.',copy:'Earth rests at the center. Mars circles a moving point that itself circles Earth. For part of each cycle, the motion on the smaller circle reverses the planet’s apparent motion against the stars.',equation:'Earth → Mars = deferent + epicycle',insight:'An epicycle is a geometric explanation of retrograde motion—not a failure to reproduce it.'},
+helio:{serial:'MODEL 02 / 03',tag:'MOVING OBSERVER',reference:'SUN HELD STILL',headline:'The observer is moving.',copy:'Earth orbits the Sun more quickly than Mars. As Earth overtakes the outer planet, our line of sight sweeps backward for a while—even though both planets keep orbiting in the same direction.',equation:'Earth → Mars = Sun → Mars − Sun → Earth',insight:'The reversal emerges from viewing Mars from a faster-moving planet.'},
+tycho:{serial:'MODEL 03 / 03',tag:'SUN-CARRIED ORBIT',reference:'EARTH HELD STILL',headline:'A still Earth. The same sky.',copy:'Earth stays fixed while the Sun circles it, carrying the orbit of Mars along. The combined motions give exactly the same Earth-to-Mars direction as the heliocentric construction.',equation:'Earth → Mars = Earth → Sun + Sun → Mars',insight:'The Tychonic and heliocentric diagrams predict the same apparent motion here.'}
+};
+const starSeeds=Array.from({length:85},(_,i)=>{const a=Math.sin(i*127.13+41.9)*43758.5453,b=Math.sin(i*93.77+12.6)*9182.31;return {x:30+(a-Math.floor(a))*660,y:20+(b-Math.floor(b))*433,r:i%7===0?1.15:.55,opacity:i%3===0?.31:.18}});
+const stars=starSeeds.map(s=>`<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="${s.r}" fill="#b8c9e4" opacity="${s.opacity}"/>`).join('');
+function vec(t,m){const c=coordinates(t);if(m==='helio')return {sun:make(0,0),earth:c.heliocentric.earth,mars:c.heliocentric.mars};if(m==='tycho')return c.tycho;return c.geo;}
+function path(points,project){return points.map((p,i)=>{const q=project(p);return `${i?'L':'M'}${q.x.toFixed(2)},${q.y.toFixed(2)}`;}).join(' ');}
+function orbitSvg(){
+ const c=vec(time,model),center=make(360,243),zoom=model==='helio'?118:85;
+ const project=p=>make(center.x+zoom*p.x,center.y-zoom*p.y);
+ const pEarth=project(c.earth),pMars=project(c.mars),pSun=project(c.sun);
+ const circle=(point,r,color,opacity=.7,dash='')=>`<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${(r*zoom).toFixed(1)}" class="orbit" stroke="${color}" stroke-opacity="${opacity}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+ const line=(a,b,color,opacity=.7,dash='')=>`<line x1="${a.x.toFixed(2)}" y1="${a.y.toFixed(2)}" x2="${b.x.toFixed(2)}" y2="${b.y.toFixed(2)}" stroke="${color}" stroke-opacity="${opacity}" stroke-width="1.5" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+ const dot=(p,r,color)=>`<circle cx="${p.x}" cy="${p.y}" r="${r*2.25}" fill="${color}" opacity=".11" filter="url(#planetGlow)"/><circle cx="${p.x}" cy="${p.y}" r="${r+2.4}" fill="${color}" opacity=".11"/><circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${color}" stroke="#ffffff" stroke-opacity=".22" stroke-width=".7"/>`;
+ let orbits='',traces='',constructions='';
+ if(model==='helio'){
+   orbits+=circle(pSun,1,palette.aqua,.26)+circle(pSun,marsRadius,palette.mars,.36);
+   if(showTrails){const times=Array.from({length:76},(_,i)=>Math.max(minDay,time-94)+i*(Math.min(94,time-minDay)/75));traces+=`<path d="${path(times.map(t=>vec(t,model).earth),project)}" fill="none" stroke="${palette.aqua}" stroke-width="2.65" stroke-opacity=".65" stroke-linecap="round"/>`+`<path d="${path(times.map(t=>vec(t,model).mars),project)}" fill="none" stroke="${palette.mars}" stroke-width="2.7" stroke-opacity=".68" stroke-linecap="round"/>`;}
+   if(showGuides)constructions+=line(pSun,pEarth,palette.aqua,.34,'4 6')+line(pSun,pMars,palette.mars,.3,'4 6');
+ }else if(model==='tycho'){
+   orbits+=circle(pEarth,1,palette.gold,.4)+circle(pSun,marsRadius,palette.mars,.44);
+   if(showGuides)constructions+=line(pEarth,pSun,palette.gold,.49,'4 5')+line(pSun,pMars,palette.mars,.37,'4 6');
+   if(showTrails){const times=Array.from({length:105},(_,i)=>Math.max(minDay,time-120)+i*(Math.min(120,time-minDay)/104));traces+=`<path d="${path(times.map(t=>vec(t,model).mars),project)}" fill="none" stroke="${palette.mars}" stroke-width="2.7" stroke-opacity=".7" stroke-linecap="round"/>`+`<path d="${path(times.map(t=>vec(t,model).sun),project)}" fill="none" stroke="${palette.gold}" stroke-width="1.9" stroke-opacity=".5" stroke-linecap="round"/>`;}
+ }else{
+   const cp=project(c.deferent);
+   orbits+=circle(pEarth,marsRadius,palette.aqua,.35);
+   if(showGuides){orbits+=circle(cp,1,palette.mars,.55,'4 5');constructions+=line(pEarth,cp,palette.aqua,.5,'4 5')+line(cp,pMars,palette.mars,.7,'5 5')+`<circle cx="${cp.x}" cy="${cp.y}" r="3.7" fill="#cad6eb" opacity=".75"/>`;}
+   if(showTrails){const times=Array.from({length:105},(_,i)=>Math.max(minDay,time-120)+i*(Math.min(120,time-minDay)/104));traces+=`<path d="${path(times.map(t=>vec(t,model).mars),project)}" fill="none" stroke="${palette.mars}" stroke-width="2.7" stroke-opacity=".72" stroke-linecap="round"/>`;}
+ }
+ const v=minus(pMars,pEarth),len=Math.hypot(v.x,v.y),direction=scale(v,1/len),end=plus(pMars,scale(direction,Math.min(76,Math.max(0,245-Math.hypot(pMars.x-center.x,pMars.y-center.y)))));
+ const ray=`<line x1="${pEarth.x}" y1="${pEarth.y}" x2="${end.x}" y2="${end.y}" stroke="#dce6f3" stroke-opacity=".82" stroke-width="1.4" stroke-dasharray="3 6"/>`;
+ const axis=`<circle cx="${center.x}" cy="${center.y}" r="242" fill="none" stroke="#455a74" stroke-width=".6" stroke-dasharray="1 12" stroke-opacity=".48"/>`+Array.from({length:36},(_,i)=>{const a=i*TAU/36,ri=231,ro=i%3===0?238:234;return line(project(scale(rads(1,a),ri/zoom)),project(scale(rads(1,a),ro/zoom)),'#62768c',i%3===0?.34:.16)}).join('')+`<text x="360" y="14" text-anchor="middle" class="svg-small">FIXED-STAR REFERENCE</text>`;
+ const earthLabel=`<text x="${pEarth.x-13}" y="${pEarth.y+26}" text-anchor="end" class="svg-label" fill="${palette.aqua}">Earth</text>`;
+ const marsLabel=`<text x="${pMars.x+12}" y="${pMars.y-13}" class="svg-label" fill="${palette.mars}">Mars</text>`;
+ const sunLabel=`<text x="${pSun.x+11}" y="${pSun.y+22}" class="svg-label" fill="${palette.gold}">Sun</text>`;
+ const miniLabel=(model==='geo'&&showGuides)?(()=>{const cp=project(c.deferent);return `<text x="${cp.x+10}" y="${cp.y-10}" class="svg-small">EPICYCLE CENTER</text>`;})():'';
+ const clip=`<defs><radialGradient id="nebula"><stop offset="0%" stop-color="#314664" stop-opacity=".25"/><stop offset="100%" stop-color="#101a2b" stop-opacity="0"/></radialGradient><filter id="planetGlow" x="-400%" y="-400%" width="900%" height="900%"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
+ $('universe').innerHTML=clip+`<ellipse cx="360" cy="240" rx="310" ry="235" fill="url(#nebula)"/>`+stars+axis+orbits+traces+constructions+ray+(model==='helio'?dot(pSun,8.8,palette.gold)+sunLabel+dot(pEarth,5.8,palette.aqua)+earthLabel+dot(pMars,6.7,palette.mars)+marsLabel:model==='tycho'?dot(pSun,8.3,palette.gold)+sunLabel+dot(pEarth,6,palette.aqua)+earthLabel+dot(pMars,6.9,palette.mars)+marsLabel:dot(pSun,6.2,palette.gold)+sunLabel+dot(pEarth,7,palette.aqua)+earthLabel+dot(pMars,6.9,palette.mars)+marsLabel)+miniLabel;
+}
+function skyDial(){const a=coordinates(time).longitude;const x=75+49*Math.cos(a),y=75-49*Math.sin(a);const degree=Math.round(formatAngle(time)*10)/10;const fixed=Array.from({length:24},(_,i)=>{const t=i*TAU/24;const xx=75+63*Math.cos(t),yy=75-63*Math.sin(t);return `<circle cx="${xx.toFixed(2)}" cy="${yy.toFixed(2)}" r="${i%3===0?1.6:1}" fill="#b4c7dc" opacity="${i%3===0?.6:.27}"/>`;}).join('');$('skyDial').innerHTML=`<defs><filter id="glowDial"><feGaussianBlur stdDeviation="3"/></filter></defs><circle cx="75" cy="75" r="61" fill="#17253970" stroke="#495f79" stroke-opacity=".6" stroke-width=".9"/>${fixed}<circle cx="75" cy="75" r="49" fill="none" stroke="#516a86" stroke-width=".7" stroke-dasharray="2 5"/><path d="M75 22V128M22 75H128" stroke="#4c637b" stroke-width=".5" stroke-opacity=".35"/><line x1="75" y1="75" x2="${x}" y2="${y}" stroke="#e4c79b" stroke-width="1.5" stroke-opacity=".85"/><circle cx="75" cy="75" r="4.8" fill="${palette.aqua}"/><circle cx="${x}" cy="${y}" r="11" fill="${palette.mars}" opacity=".16" filter="url(#glowDial)"/><circle cx="${x}" cy="${y}" r="4.5" fill="${palette.mars}"/><text x="75" y="147" text-anchor="middle" font-size="9" fill="#70869d" letter-spacing="1">FIXED STARS</text>`;$('longitude').textContent=degree.toFixed(1)+'°';const rate=apparentRate(time);const retro=rate<0; $('motion').textContent=retro?'↶ Retrograde · westward':'↷ Direct · eastward';$('motion').className='motion '+(retro?'retro':'direct');$('velocity').textContent=(rate>=0?'+':'')+rate.toFixed(2)+'° per day';}
+const chart=$('skyChart'),chartLeft=88,chartRight=1115,chartTop=48,chartBottom=251,chartMinY=-8,chartMaxY=88;
+const chartX=t=>chartLeft+(t-minDay)/(maxDay-minDay)*(chartRight-chartLeft);
+const chartY=lon=>chartBottom-(lon-chartMinY)/(chartMaxY-chartMinY)*(chartBottom-chartTop);
+const segment=(from,to,step=1)=>{const times=[];for(let t=from;t<to;t+=step)times.push(t);times.push(to);return times.map((t,i)=>`${i?'L':'M'}${chartX(t).toFixed(2)},${chartY(getLongitude(t)).toFixed(2)}`).join(' ');};
+function retroWindows(){let enter=null,exit=null;for(let t=minDay;t<=maxDay;t+=.1){const r=apparentRate(t);if(enter===null&&r<0)enter=t;if(enter!==null&&r>=0){exit=t;break;}}return [enter,exit];}
+const [retroStart,retroEnd]=retroWindows();
+function drawStaticChart(){let s=`<defs><linearGradient id="retroShade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff9087" stop-opacity=".13"/><stop offset="1" stop-color="#ff9087" stop-opacity="0"/></linearGradient></defs>`;
+ s+=`<rect x="${chartX(retroStart)}" y="${chartTop}" width="${chartX(retroEnd)-chartX(retroStart)}" height="${chartBottom-chartTop}" fill="url(#retroShade)"/><text x="${(chartX(retroStart)+chartX(retroEnd))/2}" y="29" fill="#ff9d8d" font-size="10" font-weight="760" text-anchor="middle" letter-spacing="1.4">RETROGRADE</text>`;
+ for(let d=0;d<=80;d+=20){const y=chartY(d);s+=`<line x1="${chartLeft}" x2="${chartRight}" y1="${y}" y2="${y}" stroke="#50627a" stroke-width="1" stroke-opacity=".34" stroke-dasharray="2 5"/><text x="${chartLeft-16}" y="${y+4}" text-anchor="end" font-size="12" fill="#889ab1">${d}°</text>`;}
+ for(let d=260;d<=550;d+=58){const x=chartX(d);s+=`<line x1="${x}" y1="${chartBottom}" x2="${x}" y2="${chartBottom+5}" stroke="#637790"/><text x="${x}" y="${chartBottom+22}" text-anchor="middle" fill="#8296ac" font-size="11">${d}</text>`;}
+ s+=`<text x="${chartLeft}" y="32" text-anchor="start" fill="#8296ac" font-size="10" letter-spacing="1.5">ECLIPTIC LONGITUDE · °</text><text x="${(chartLeft+chartRight)/2}" y="290" text-anchor="middle" fill="#8296ac" font-size="10" letter-spacing="1.5">SIMULATION DAY</text>`;
+ s+=`<path d="${segment(minDay,maxDay)}" stroke="#9acbd1" stroke-opacity=".28" stroke-width="4" stroke-linecap="round" fill="none"/><path d="${segment(minDay,retroStart)}" stroke="${palette.aqua}" stroke-width="2.7" fill="none"/><path d="${segment(retroStart,retroEnd)}" stroke="#ff958b" stroke-width="3.6" stroke-linecap="round" fill="none"/><path d="${segment(retroEnd,maxDay)}" stroke="${palette.aqua}" stroke-width="2.7" fill="none"/>`;
+ s+=`<g id="chartIndicator"><line id="currentLine" x1="0" x2="0" y1="${chartTop}" y2="${chartBottom}" stroke="#d8c6a6" opacity=".8" stroke-width="1.2" stroke-dasharray="4 6"/><circle id="currentHalo" r="12" fill="#f9d8a2" opacity=".18"/><circle id="currentDot" r="5.1" fill="#f9d8a2" stroke="#101827" stroke-width="1.6"/></g>`;
+ chart.innerHTML=s;
+}
+function moveChart(){const x=chartX(time),y=chartY(getLongitude(time));$('currentLine').setAttribute('x1',x);$('currentLine').setAttribute('x2',x);for(const id of ['currentHalo','currentDot']){const el=$(id);el.setAttribute('cx',x);el.setAttribute('cy',y);}}
+function setResponsiveViewport(){const narrow=window.matchMedia('(max-width:900px)').matches;const mobile=window.matchMedia('(max-width:550px)').matches;$('universe').setAttribute('viewBox',narrow?'120 0 480 485':'0 0 720 485');if(narrow){const width=mobile?510:760,offset=Math.max(chartLeft,Math.min(chartRight-width,chartX(time)-width/2));chart.setAttribute('viewBox',`${offset.toFixed(1)} 0 ${width} 295`);}else{chart.setAttribute('viewBox','0 0 1160 295');}}
+function repaint(){setResponsiveViewport();orbitSvg();skyDial();moveChart();$('timeline').value=time;$('dayLabel').textContent='Day '+Math.round(time);$('playIcon').textContent=playing?'Ⅱ':'▶';$('playLabel').textContent=playing?'Pause':'Play';$('play').setAttribute('aria-label',playing?'Pause animation':'Play animation');}
+function selectModel(m){model=m;document.querySelectorAll('.tab').forEach(b=>{const selected=b.dataset.model===m;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});const a=descriptions[m];$('referenceNote').textContent=a.reference;$('mechanismTag').textContent=a.tag;$('serial').textContent=a.serial;$('modelHeadline').textContent=a.headline;$('explanation').textContent=a.copy;$('equation').textContent=a.equation;$('insight').textContent=a.insight;repaint();}
+function frame(ms){if(lastFrame!==null&&playing){const dt=Math.min(.06,(ms-lastFrame)/1000);time+=dt*10*speed;if(time>=maxDay){time=minDay;}}lastFrame=ms;if(playing)repaint();requestAnimationFrame(frame);}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>selectModel(b.dataset.model)));
+$('play').addEventListener('click',()=>{playing=!playing;lastFrame=null;repaint();});
+$('reset').addEventListener('click',()=>{time=minDay;playing=false;repaint();});
+$('timeline').addEventListener('input',e=>{time=Number(e.target.value);repaint();});
+$('construction').addEventListener('change',e=>{showGuides=e.target.checked;repaint();});
+$('trails').addEventListener('change',e=>{showTrails=e.target.checked;repaint();});
+document.querySelectorAll('[data-speed]').forEach(b=>b.addEventListener('click',()=>{speed=Number(b.dataset.speed);document.querySelectorAll('[data-speed]').forEach(s=>s.classList.toggle('selected',s===b));}));
+window.addEventListener('keydown',e=>{if(['INPUT','BUTTON'].includes(document.activeElement?.tagName))return;if(e.key===' '){e.preventDefault();playing=!playing;repaint();}if(e.key==='ArrowRight'){time=Math.min(maxDay,time+1);repaint();}if(e.key==='ArrowLeft'){time=Math.max(minDay,time-1);repaint();}});
+window.addEventListener('resize',repaint);drawStaticChart();selectModel('helio');requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
